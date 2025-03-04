@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .card { display: inline-block; width: 60px; height: 90px; border: 1px solid black; margin: 5px; padding: 10px; background-color: white; }
+        #player-hand, #dealer-hand { margin: 20px; }
+        .hidden { background-color: gray; }
+    </style>
+</head>
+<body>
+    <h1>Simple Poker Game</h1>
+    <button onclick="startGame()">Start Game</button>
+    <h2>Dealer's Hand</h2>
+    <div id="dealer-hand"></div>
+    <h2>Your Hand</h2>
+    <div id="player-hand"></div>
+    
+    <script>
+        const suits = ['♠', '♥', '♦', '♣'];
+        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        
+        function getDeck() {
+            let deck = [];
+            for (let suit of suits) {
+                for (let rank of ranks) {
+                    deck.push({ rank, suit });
+                }
+            }
+            return deck.sort(() => Math.random() - 0.5);
+        }
+        
+        function dealHand(deck, handId, hideFirst = false) {
+            let hand = deck.splice(0, 2);
+            let handDiv = document.getElementById(handId);
+            handDiv.innerHTML = '';
+            hand.forEach((card, index) => {
+                let cardDiv = document.createElement('div');
+                cardDiv.className = 'card' + (hideFirst && index === 0 ? ' hidden' : '');
+                cardDiv.innerText = hideFirst && index === 0 ? '?' : `${card.rank}${card.suit}`;
+                handDiv.appendChild(cardDiv);
+            });
+        }
+        
+        function startGame() {
+            let deck = getDeck();
+            dealHand(deck, 'dealer-hand', true);
+            dealHand(deck, 'player-hand');
+        }
+    </script>
+</body>
+</html>
