@@ -6,16 +6,18 @@
     <title>Poker Game</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        .card { display: inline-block; width: 60px; height: 90px; border: 1px solid black; margin: 5px; padding: 10px; background-color: white; }
-        #player-hand, #dealer-hand { margin: 20px; }
-        .hidden { background-color: gray; }
+        .card { display: inline-block; width: 80px; height: 120px; border: 2px solid black; margin: 5px; padding: 10px; background-color: white; font-size: 24px; font-weight: bold; }
+        #player-hand, #dealer-hand, #community-cards { margin: 20px; }
+        .hidden { background-color: gray; color: gray; }
     </style>
 </head>
 <body>
-    <h1>Simple Poker Game</h1>
+    <h1>Texas Hold'em Poker</h1>
     <button onclick="startGame()">Start Game</button>
     <h2>Dealer's Hand</h2>
     <div id="dealer-hand"></div>
+    <h2>Community Cards</h2>
+    <div id="community-cards"></div>
     <h2>Your Hand</h2>
     <div id="player-hand"></div>
     
@@ -33,22 +35,23 @@
             return deck.sort(() => Math.random() - 0.5);
         }
         
-        function dealHand(deck, handId, hideFirst = false) {
-            let hand = deck.splice(0, 2);
+        function dealHand(deck, handId, count, hideFirst = false) {
+            let hand = deck.splice(0, count);
             let handDiv = document.getElementById(handId);
             handDiv.innerHTML = '';
             hand.forEach((card, index) => {
                 let cardDiv = document.createElement('div');
-                cardDiv.className = 'card' + (hideFirst && index === 0 ? ' hidden' : '');
-                cardDiv.innerText = hideFirst && index === 0 ? '?' : `${card.rank}${card.suit}`;
+                cardDiv.className = 'card' + (hideFirst && index < 2 ? ' hidden' : '');
+                cardDiv.innerText = hideFirst && index < 2 ? '?' : `${card.rank}${card.suit}`;
                 handDiv.appendChild(cardDiv);
             });
         }
         
         function startGame() {
             let deck = getDeck();
-            dealHand(deck, 'dealer-hand', true);
-            dealHand(deck, 'player-hand');
+            dealHand(deck, 'dealer-hand', 2, true); // Dealer gets 2 hidden cards
+            dealHand(deck, 'player-hand', 2); // Player gets 2 visible cards
+            dealHand(deck, 'community-cards', 5); // Deal 5 community cards
         }
     </script>
 </body>
