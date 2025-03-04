@@ -74,7 +74,7 @@
         }
 
         function evaluateHand(cards) {
-            let values = cards.map(card => card.rank);
+            let values = cards.map(card => ranks.indexOf(card.rank) + 2).sort((a, b) => a - b);
             let suits = cards.map(card => card.suit);
             let rankCount = {};
             values.forEach(value => rankCount[value] = (rankCount[value] || 0) + 1);
@@ -84,8 +84,15 @@
                 if (count === 3) three++;
                 if (count === 4) four++;
             }
+            
+            let isFlush = suits.every(suit => suit === suits[0]);
+            let isStraight = values.every((v, i, arr) => i === 0 || v === arr[i - 1] + 1);
+            
+            if (isFlush && isStraight) return "Straight Flush";
             if (four) return "Four of a Kind";
             if (three && pairs) return "Full House";
+            if (isFlush) return "Flush";
+            if (isStraight) return "Straight";
             if (three) return "Three of a Kind";
             if (pairs === 2) return "Two Pair";
             if (pairs === 1) return "One Pair";
@@ -94,7 +101,7 @@
 
         function startGame() {
             let deck = getDeck();
-            dealerHand = dealHand(deck, 'dealer-hand', 2, true); // Hide dealer cards initially
+            dealerHand = dealHand(deck, 'dealer-hand', 2, true);
             playerHand = dealHand(deck, 'player-hand', 2);
             communityCards = dealHand(deck, 'community-cards', 5);
             document.getElementById('results').innerHTML = '';
