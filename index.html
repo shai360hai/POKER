@@ -6,7 +6,22 @@
     <title>Poker Game</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        .card { display: inline-block; width: 80px; height: 120px; border: 2px solid black; margin: 5px; padding: 10px; background-color: white; font-size: 24px; font-weight: bold; }
+        .card { 
+            display: inline-block; 
+            width: 100px; 
+            height: 140px; 
+            border: 2px solid black; 
+            margin: 5px; 
+            padding: 10px; 
+            background-color: white; 
+            font-size: 32px; 
+            font-weight: bold; 
+            text-align: center;
+            line-height: 140px;
+            border-radius: 8px;
+        }
+        .red { color: red; }
+        .black { color: black; }
         #player-hand, #dealer-hand, #community-cards { margin: 20px; }
         .hidden { background-color: gray; color: gray; }
     </style>
@@ -47,11 +62,15 @@
             handDiv.innerHTML = '';
             hand.forEach((card, index) => {
                 let cardDiv = document.createElement('div');
-                cardDiv.className = 'card' + (hideCards ? ' hidden' : '');
+                cardDiv.className = 'card ' + (hideCards ? 'hidden' : getCardColor(card.suit));
                 cardDiv.innerText = hideCards ? '?' : `${card.rank}${card.suit}`;
                 handDiv.appendChild(cardDiv);
             });
             return hand;
+        }
+
+        function getCardColor(suit) {
+            return (suit === '♥' || suit === '♦') ? 'red' : 'black';
         }
 
         function evaluateHand(cards) {
@@ -87,7 +106,7 @@
             dealerDiv.innerHTML = '';
             dealerHand.forEach(card => {
                 let cardDiv = document.createElement('div');
-                cardDiv.className = 'card';
+                cardDiv.className = 'card ' + getCardColor(card.suit);
                 cardDiv.innerText = `${card.rank}${card.suit}`;
                 dealerDiv.appendChild(cardDiv);
             });
