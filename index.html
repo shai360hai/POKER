@@ -20,6 +20,8 @@
     <div id="community-cards"></div>
     <h2>Your Hand</h2>
     <div id="player-hand"></div>
+    <h2>Results</h2>
+    <div id="results"></div>
     
     <script>
         const suits = ['♠', '♥', '♦', '♣'];
@@ -35,23 +37,48 @@
             return deck.sort(() => Math.random() - 0.5);
         }
         
-        function dealHand(deck, handId, count, hideFirst = false) {
+        function dealHand(deck, handId, count, hideCards = false) {
             let hand = deck.splice(0, count);
             let handDiv = document.getElementById(handId);
             handDiv.innerHTML = '';
             hand.forEach((card, index) => {
                 let cardDiv = document.createElement('div');
-                cardDiv.className = 'card' + (hideFirst && index < 2 ? ' hidden' : '');
-                cardDiv.innerText = hideFirst && index < 2 ? '?' : `${card.rank}${card.suit}`;
+                cardDiv.className = 'card' + (hideCards ? ' hidden' : '');
+                cardDiv.innerText = hideCards ? '?' : `${card.rank}${card.suit}`;
                 handDiv.appendChild(cardDiv);
             });
+            return hand;
         }
-        
+
+        function evaluateHand(cards) {
+            let values = cards.map(card => card.rank);
+            let suits = cards.map(card => card.suit);
+            let rankCount = {};
+            values.forEach(value => rankCount[value] = (rankCount[value] || 0) + 1);
+            let pairs = 0, three = 0, four = 0;
+            for (let count of Object.values(rankCount)) {
+                if (count === 2) pairs++;
+                if (count === 3) three++;
+                if (count === 4) four++;
+            }
+            if (four) return "Four of a Kind";
+            if (three && pairs) return "Full House";
+            if (three) return "Three of a Kind";
+            if (pairs === 2) return "Two Pair";
+            if (pairs === 1) return "One Pair";
+            return "High Card";
+        }
+
         function startGame() {
             let deck = getDeck();
-            dealHand(deck, 'dealer-hand', 2, true); // Dealer gets 2 hidden cards
-            dealHand(deck, 'player-hand', 2); // Player gets 2 visible cards
-            dealHand(deck, 'community-cards', 5); // Deal 5 community cards
+            let dealerHand = dealHand(deck, 'dealer-hand', 2, false); // Show dealer cards
+            let playerHand = dealHand(deck, 'player-hand', 2);
+            let communityCards = dealHand(deck, 'community-cards', 5);
+            
+            let dealerBestHand = evaluateHand([...dealerHand, ...communityCards]);
+            let playerBestHand = evaluateHand([...playerHand, ...communityCards]);
+            
+            document.getElementById('results').innerHTML = `Player: ${playerBestHand} <br> Dealer: ${dealerBestHand}`;
         }
     </script>
 </body>
